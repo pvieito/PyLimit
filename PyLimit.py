@@ -26,8 +26,10 @@ __email__ = "pvieito@gmail.com"
 
 args = docopt(__doc__)
 
+
 def all_same(items):
     return all(x == items[0] for x in items)
+
 
 def read_signs():
     signs = []
@@ -35,17 +37,19 @@ def read_signs():
         signs.append((os.path.splitext(os.path.basename(item))[0], cv2.imread(item)))
     return signs
 
+
 def to_blackwhite(im):
     img = cv2.cvtColor(im, cv2.COLOR_BGR2GRAY)
     thresh, im_bw = cv2.threshold(img, 128, 255, cv2.THRESH_BINARY | cv2.THRESH_OTSU)
     return im_bw
+
 
 def check_sign(i1, i2, limit):
     diff = cv2.absdiff(to_blackwhite(i1), to_blackwhite(i2))
     diff = cv2.bitwise_and(mask, diff)
     diff_mean = diff.mean()
 
-    preview = cv2.resize(diff, (100 , 100))
+    preview = cv2.resize(diff, (100, 100))
     cv2.putText(preview, str(int(diff_mean)), (5, 15), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 255, 0), 1)
     cv2.imshow(limit, preview)
 
@@ -56,13 +60,14 @@ def check_sign(i1, i2, limit):
         cv2.moveWindow(limit, (int(limit) - 10) * 13 + 10, 10)
     return diff_mean
 
+
 def analyze_rects(img, rects, color):
     printed_limit = None
     for (x, y, w, h) in rects:
         x1, y1, x2, y2 = x, y, x + w, y + h
         cv2.rectangle(img, (x1, y1), (x2, y2), color, 2)
 
-        sign = cv2.resize(img[y1:y2, x1:x2], (200 , 200))
+        sign = cv2.resize(img[y1:y2, x1:x2], (200, 200))
 
         official_signs = read_signs()
 
@@ -72,10 +77,10 @@ def analyze_rects(img, rects, color):
 
         detected_limit = min(limits.iteritems(), key=operator.itemgetter(1))[0]
 
-        cv2.imshow('Signs', cv2.resize(sign, (100 , 100)))
+        cv2.imshow('Signs', cv2.resize(sign, (100, 100)))
         cv2.moveWindow('Signs', 10, 270)
 
-        cv2.imshow('BW Sign', cv2.resize(to_blackwhite(sign), (100 , 100)))
+        cv2.imshow('BW Sign', cv2.resize(to_blackwhite(sign), (100, 100)))
         cv2.moveWindow('BW Sign', 150, 270)
 
         if limits[detected_limit] < int(args["-t"]):
@@ -119,7 +124,7 @@ if __name__ == '__main__':
                     last_detected_limit = detected_limits[-1]
                     print('===> ' + last_detected_limit)
         
-        img = cv2.resize(img, (550 , 300))
+        img = cv2.resize(img, (550, 300))
         cv2.putText(img, last_detected_limit, (10, 40), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 255), 2)
         cv2.imshow('PyLimit', img)
         cv2.moveWindow('PyLimit', 10, 400)
