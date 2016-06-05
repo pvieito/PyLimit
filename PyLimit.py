@@ -1,5 +1,4 @@
-#!/usr/bin/env python2
-# -*- coding: utf-8 -*-
+#!/usr/bin/env python3
 '''PyLimit.py - Pedro José Pereira Vieito © 2014
 
 Usage:
@@ -13,7 +12,6 @@ Options:
   -h, --help    Show this help
 '''
 
-from __future__ import division
 from docopt import docopt
 import glob
 import sys
@@ -75,7 +73,7 @@ def analyze_rects(img, rects, color):
         for limit, official_sign in official_signs:
             limits[limit] = check_sign(sign, official_sign, limit)
 
-        detected_limit = min(limits.iteritems(), key=operator.itemgetter(1))[0]
+        detected_limit = min(iter(limits.items()), key=operator.itemgetter(1))[0]
 
         cv2.imshow('Signs', cv2.resize(sign, (100, 100)))
         cv2.moveWindow('Signs', 10, 270)
@@ -123,7 +121,7 @@ if __name__ == '__main__':
                 if last_detected_limit != detected_limits[-1]:
                     last_detected_limit = detected_limits[-1]
                     print('===> ' + last_detected_limit)
-        
+
         img = cv2.resize(img, (550, 300))
         cv2.putText(img, last_detected_limit, (10, 40), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 255), 2)
         cv2.imshow('PyLimit', img)
@@ -131,5 +129,5 @@ if __name__ == '__main__':
 
         if 0xFF & cv2.waitKey(5) == 27:
             break
-    
+
     cv2.destroyAllWindows()
