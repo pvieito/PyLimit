@@ -32,13 +32,15 @@ def all_same(items):
 def read_signs():
     signs = []
     for item in glob.glob('signs/*.jpg'):
-        signs.append((os.path.splitext(os.path.basename(item))[0], cv2.imread(item)))
+        signs.append((os.path.splitext(os.path.basename(item))[0],
+                      cv2.imread(item)))
     return signs
 
 
 def to_blackwhite(im):
     img = cv2.cvtColor(im, cv2.COLOR_BGR2GRAY)
-    thresh, im_bw = cv2.threshold(img, 128, 255, cv2.THRESH_BINARY | cv2.THRESH_OTSU)
+    thresh, im_bw = cv2.threshold(img, 128, 255,
+                                  cv2.THRESH_BINARY | cv2.THRESH_OTSU)
     return im_bw
 
 
@@ -48,7 +50,8 @@ def check_sign(i1, i2, limit):
     diff_mean = diff.mean()
 
     preview = cv2.resize(diff, (100, 100))
-    cv2.putText(preview, str(int(diff_mean)), (5, 15), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 255, 0), 1)
+    cv2.putText(preview, str(int(diff_mean)), (5, 15),
+                cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 255, 0), 1)
     cv2.imshow(limit, preview)
 
     # Show Comparisons
@@ -73,7 +76,8 @@ def analyze_rects(img, rects, color):
         for limit, official_sign in official_signs:
             limits[limit] = check_sign(sign, official_sign, limit)
 
-        detected_limit = min(iter(limits.items()), key=operator.itemgetter(1))[0]
+        detected_limit = min(iter(limits.items()),
+                             key=operator.itemgetter(1))[0]
 
         cv2.imshow('Signs', cv2.resize(sign, (100, 100)))
         cv2.moveWindow('Signs', 10, 270)
@@ -109,7 +113,8 @@ if __name__ == '__main__':
 
         ret, img = video.read()
 
-        rects = cascade.detectMultiScale(cv2.cvtColor(img, cv2.COLOR_BGR2GRAY), minNeighbors=int(args["-n"]))
+        rects = cascade.detectMultiScale(cv2.cvtColor(img, cv2.COLOR_BGR2GRAY),
+                                         minNeighbors=int(args["-n"]))
 
         detected_limit = analyze_rects(img, rects, (0, 255, 0))
 
@@ -123,7 +128,8 @@ if __name__ == '__main__':
                     print('===> ' + last_detected_limit)
 
         img = cv2.resize(img, (550, 300))
-        cv2.putText(img, last_detected_limit, (10, 40), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 255), 2)
+        cv2.putText(img, last_detected_limit, (10, 40),
+                    cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 255), 2)
         cv2.imshow('PyLimit', img)
         cv2.moveWindow('PyLimit', 10, 400)
 
